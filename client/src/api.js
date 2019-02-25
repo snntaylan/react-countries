@@ -76,7 +76,6 @@ export default {
       .catch(errHandler)
   },
 
-
   deleteCountry(countryId) {
     return service
       .delete('/countries/'+countryId)
@@ -94,6 +93,13 @@ export default {
   addCountry(country){
     return service
     .post('/countries' + country)
+    .then(res => res.data)
+    .catch(errHandler)
+  },
+
+  editCountry(countryId, body){
+    return service
+    .post('/countries/' + countryId, body)
     .then(res => res.data)
     .catch(errHandler)
   },

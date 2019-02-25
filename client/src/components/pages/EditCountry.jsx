@@ -1,70 +1,71 @@
-import React, { Component } from 'react';
+import React, { Component } from 'react'
 import api from '../../api';
 
-
-class AddCountry extends Component {
+export default class EditCountry extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      name: "",
-      capitals: "",
-      area: "",
-      description: "",
+      name: '',
+      capitals: [],
+      area: '',
+      description: '',
       message: null
     }
+    this.handleSubmit = this.handleSubmit.bind(this)
   }
-
-  handleInputChange(stateFieldName, event) {
-    let newState = {}
-    newState[stateFieldName] = event.target.value
-
-    this.setState(newState)
+  handleInputChange(stateKey, event){
+    this.setState({
+      [stateKey]: event.target.value
+    })
   }
+  handleSubmit(e){
+    e.preventDefault() // To not not submit the form and redirect the user to another page
 
-  handleClick(e) {
-    e.preventDefault()
-    console.log(this.state.name, this.state.description)
-    let data = {
+    api.editCountry(this.props.match.params.countryId, {
       name: this.state.name,
       capitals: this.state.capitals,
       area: this.state.area,
       description: this.state.description,
-    }
-    api.postCountries(data)
-      .then(result => {
-        console.log('SUCCESS!')
+    })
+      .then(data => {
+        console.log("Yeah!!!!!", data)
         this.setState({
-          name: "",
-          capitals: "",
-          area: "",
-          description: "",
-          message: `Your country '${this.state.name}' has been created`
+          message: data.message
         })
+        // Remove of the message after 3 seconds
         setTimeout(() => {
           this.setState({
             message: null
           })
-        }, 2000)
+        }, 3000)
       })
-      .catch(err => this.setState({ message: err.toString() }))
   }
   render() {
     return (
-      <div className="AddCountry">
-        <h2>Add country</h2>
-        <form>
+      <div className="EditCountry">
+        <h1>Edit Country</h1>
+        <form onSubmit={this.handleSubmit}>
           Name: <input type="text" value={this.state.name} onChange={(e) => { this.handleInputChange("name", e) }} /> <br />
           Capitals: <input type="text" value={this.state.capitals} onChange={(e) => { this.handleInputChange("capitals", e) }} /> <br />
           Area: <input type="number" value={this.state.area} onChange={(e) => { this.handleInputChange("area", e) }} /> <br />
           Description: <textarea value={this.state.description} cols="30" rows="10" onChange={(e) => { this.handleInputChange("description", e) }} ></textarea> <br />
-          <button onClick={(e) => this.handleClick(e)}>Create country</button>
+          <button>Edit country</button>
         </form>
         {this.state.message && <div className="info">
           {this.state.message}
         </div>}
       </div>
-    );
+    )
+  }
+  componentDidMount(){
+    api.getCountryDetail(this.props.match.params.countryId)
+      .then(country => {
+        this.setState({
+          name: country.name,
+          capitals: country.capitals,
+          area: country.area,
+          description: country.description,
+        })
+      })
   }
 }
-
-export default AddCountry;
