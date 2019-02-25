@@ -69,6 +69,14 @@ export default {
       .catch(errHandler)
   },
 
+  getCountriesDetail(id) {
+    return service
+      .get('/countries/', id)
+      .then(res => res.data)
+      .catch(errHandler)
+  },
+
+
   deleteCountry(countryId) {
     return service
       .delete('/countries/'+countryId)
@@ -83,9 +91,15 @@ export default {
       .catch(errHandler)
   },
 
+  addCountry(country){
+    return service
+    .post('/countries' + country)
+    .then(res => res.data)
+    .catch(errHandler)
+  },
 
 
-  addPicture(file) {
+  addPicture(file){
     const formData = new FormData()
     formData.append("picture", file)
     return service
@@ -98,3 +112,6 @@ export default {
       .catch(errHandler)
   },
 }
+
+
+

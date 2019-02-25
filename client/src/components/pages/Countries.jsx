@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import api from '../../api';
+import axios from 'axios';
 
 class Countries extends Component {
   constructor(props) {
@@ -8,6 +9,24 @@ class Countries extends Component {
       countries: []
     }
   }
+  handleChange(event) {
+    this.setState({ [event.target.countries]: event.target.value });
+  }
+
+  handleSubmit(event) {
+    event.preventDefault();
+    const country = {
+      name: this.state.countries
+    };
+    axios.post(`https://jsonplaceholder.typicode.com/countries`, {country})
+      .then(res => {
+        console.log(res.data)
+        // Redirect to the Home page
+        this.props.history.push('/')
+      })
+  }
+
+
   deleteCountry(countryId){
     api.deleteCountry(countryId)
     .then(data =>{
@@ -23,6 +42,15 @@ class Countries extends Component {
     })
   }
 
+  addCountry(countryId){
+    api.addCountry(countryId)
+    .then(data => {
+      this.setState({
+
+      })
+    })
+  }
+
   render() {
     return (
       <div className="Countries">
@@ -35,6 +63,13 @@ class Countries extends Component {
         {this.state.message && <div className="info">
           {this.state.message}
         </div>}
+        <div>
+        <form onSubmit={this.handleSubmit.bind(this)}>
+          Country Name:
+          <input type="text" name="name" onChange={this.handleChange.bind(this)} />
+          <button type="submit">Add</button>
+        </form>
+      </div>
       </div>
     );
   }
